@@ -37,3 +37,23 @@ class TwtApiClient:
 
     def get_trends(self, woeid: int) -> dict[str, Any]:
         return self._get("/api/v1/twitter/Trends", params={"woeid": woeid})
+
+    def search_tweets(
+        self,
+        q: str,
+        result_type: str = "Top",
+        count: int = 20,
+    ) -> dict[str, Any]:
+        return self._get(
+            "/api/v1/twitter/Search",
+            params={"q": q, "type": result_type, "count": count},
+        )
+
+    def get_user_by_screen_name(self, username: str) -> dict[str, Any]:
+        return self._get(
+            "/api/v1/twitter/UserResultByScreenName",
+            params={"username": username},
+        )
+
+    def get_tweet_detail(self, tweet_id: str) -> dict[str, Any]:
+        return self._get("/api/v1/twitter/TweetDetail", params={"tweet_id": tweet_id})

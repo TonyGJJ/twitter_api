@@ -12,9 +12,23 @@
       padding: 0 16px;
       line-height: 1.5;
     }
+    .card {
+      border: 1px solid #e4e4e7;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
     input, button {
       font-size: 16px;
       padding: 8px 12px;
+    }
+    input {
+      min-width: 220px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    button {
+      cursor: pointer;
     }
     pre {
       background: #f4f4f5;
@@ -27,26 +41,51 @@
   </style>
 </head>
 <body>
-  <h1>TwtAPI Flask Demo</h1>
-  <p>这个页面会调用后端接口 <code>/api/trends</code>，后端再请求 TwtAPI。</p>
+  <h1>TwtAPI Official Python Demo (Flask)</h1>
+  <p>面向 GitHub 官方示例：同一页面演示多个常用接口。</p>
 
-  <label for="woeid">WOEID:</label>
-  <input id="woeid" type="number" value="1">
-  <button id="runBtn" type="button">查询 Trends</button>
+  <div class="card">
+    <h3>1) Trends</h3>
+    <input id="woeid" type="number" value="1" placeholder="woeid, e.g. 1">
+    <button id="runTrendsBtn" type="button">运行 Trends</button>
+  </div>
+
+  <div class="card">
+    <h3>2) Search</h3>
+    <input id="searchQ" type="text" value="bitcoin" placeholder="q, e.g. bitcoin">
+    <input id="searchType" type="text" value="Top" placeholder="type, e.g. Top">
+    <input id="searchCount" type="number" value="20" placeholder="count">
+    <button id="runSearchBtn" type="button">运行 Search</button>
+  </div>
+
+  <div class="card">
+    <h3>3) UserResultByScreenName</h3>
+    <input id="username" type="text" value="solana" placeholder="username">
+    <button id="runUserBtn" type="button">运行 User</button>
+  </div>
+
+  <div class="card">
+    <h3>4) TweetDetail</h3>
+    <input id="tweetId" type="text" value="1768778186186195177" placeholder="tweet_id">
+    <button id="runTweetDetailBtn" type="button">运行 TweetDetail</button>
+  </div>
 
   <h2>返回结果</h2>
-  <pre id="output">点击“查询 Trends”开始</pre>
+  <pre id="output">点击任意“运行”按钮开始</pre>
 
   <script>
-    const runBtn = document.getElementById("runBtn");
     const woeidInput = document.getElementById("woeid");
+    const searchQInput = document.getElementById("searchQ");
+    const searchTypeInput = document.getElementById("searchType");
+    const searchCountInput = document.getElementById("searchCount");
+    const usernameInput = document.getElementById("username");
+    const tweetIdInput = document.getElementById("tweetId");
     const output = document.getElementById("output");
 
-    async function runQuery() {
-      const woeid = woeidInput.value || "1";
+    async function requestAndRender(url) {
       output.textContent = "请求中...";
       try {
-        const resp = await fetch(`/api/trends?woeid=${encodeURIComponent(woeid)}`);
+        const resp = await fetch(url);
         const data = await resp.json();
         output.textContent = JSON.stringify(data, null, 2);
       } catch (err) {
@@ -54,7 +93,29 @@
       }
     }
 
-    runBtn.addEventListener("click", runQuery);
+    document.getElementById("runTrendsBtn").addEventListener("click", () => {
+      const woeid = woeidInput.value || "1";
+      requestAndRender(`/api/trends?woeid=${encodeURIComponent(woeid)}`);
+    });
+
+    document.getElementById("runSearchBtn").addEventListener("click", () => {
+      const q = searchQInput.value || "";
+      const type = searchTypeInput.value || "Top";
+      const count = searchCountInput.value || "20";
+      requestAndRender(
+        `/api/search?q=${encodeURIComponent(q)}&type=${encodeURIComponent(type)}&count=${encodeURIComponent(count)}`
+      );
+    });
+
+    document.getElementById("runUserBtn").addEventListener("click", () => {
+      const username = usernameInput.value || "";
+      requestAndRender(`/api/user?username=${encodeURIComponent(username)}`);
+    });
+
+    document.getElementById("runTweetDetailBtn").addEventListener("click", () => {
+      const tweetId = tweetIdInput.value || "";
+      requestAndRender(`/api/tweet-detail?tweet_id=${encodeURIComponent(tweetId)}`);
+    });
   </script>
 </body>
 </html>
